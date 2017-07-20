@@ -1,11 +1,15 @@
 package com.aditya.ormdemo;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -30,48 +34,45 @@ public class DatabaseManager {
         return helper;
     }
 
-    /**
-     * Get all customer in db
-     *
-     * @return
-     */
-    public ArrayList<Cat> getAllCats() {
-        ArrayList<Cat> cats = null;
+
+    public ArrayList<TableEntry> getAllQuestions() {
+        ArrayList<TableEntry> questionList = null;
         try {
-            cats = (ArrayList<Cat>) getHelper().getCatsDAO().queryForAll();
+            questionList = (ArrayList<TableEntry>) getHelper().getQuestionsDAO().queryForAll();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return cats;
+        return questionList;
     }
 
-    public void addCat(Cat cat) {
+    public void addQuestionEntry(TableEntry entry) {
         try {
-            getHelper().getCatsDAO().create(cat);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void refreshCat(Cat cat) {
-        try {
-            getHelper().getCatsDAO().refresh(cat);
+            getHelper().getQuestionsDAO().create(entry);
+            Log.d("Entry Added", entry.getQuestion());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateCat(Cat wishList) {
+    public void refreshQuestion(TableEntry tableEntry) {
         try {
-            getHelper().getCatsDAO().update(wishList);
+            getHelper().getQuestionsDAO().refresh(tableEntry);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void deleteCat (int catId) {
+    public void updateQuestion(TableEntry wishList) {
         try {
-            DeleteBuilder<Cat, Integer> deleteBuilder = getHelper().getCatsDAO().deleteBuilder();
+            getHelper().getQuestionsDAO().update(wishList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteQuestion(int catId) {
+        try {
+            DeleteBuilder<TableEntry, Integer> deleteBuilder = getHelper().getQuestionsDAO().deleteBuilder();
             deleteBuilder.where().eq("id", catId);
             deleteBuilder.delete();
 
@@ -80,51 +81,27 @@ public class DatabaseManager {
         }
     }
 
-    public Kitten newKitten() {
-        Kitten kitten = new Kitten();
+    public String getAns(String Ques)
+    {
+        // get our query builder from the DAO
+        QueryBuilder<TableEntry, Integer> queryBuilder = getHelper().getQuestionsDAO().queryBuilder();
+// the 'password' field must be equal to "qwerty"
         try {
-            getHelper().getKittenDAO().create(kitten);
-        } catch (SQLException e) {
+            queryBuilder.where().eq(TableEntry.QUESTION_FIELD_NAME, Ques);
+            PreparedQuery<TableEntry> preparedQuery = queryBuilder.prepare();
+            List<TableEntry> quesList = getHelper().getQuestionsDAO().query(preparedQuery);
+            return quesList.get(0).getAnswer();
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
-        return kitten;
+// prepare our sql statement
+
+// query for all accounts that have "qwerty" as a password
+        return "Not Found";
+
     }
 
-    public Kitten newKittenAppend(Kitten kitten) {
-        try {
-            getHelper().getKittenDAO().create(kitten);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return kitten;
-    }
 
-    public void updateKitten(Kitten item) {
-        try {
-            getHelper().getKittenDAO().update(item);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public ArrayList<Kitten> getAllKittens() {
-        ArrayList<Kitten> kittenArrayList = null;
-        try {
-            kittenArrayList = (ArrayList<Kitten>) getHelper().getKittenDAO().queryForAll();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return kittenArrayList;
-    }
-
-    public void deleteKitten (int kittenId) {
-        try {
-            DeleteBuilder<Kitten, Integer> deleteBuilder = getHelper().getKittenDAO().deleteBuilder();
-            deleteBuilder.where().eq("id", kittenId);
-            deleteBuilder.delete();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

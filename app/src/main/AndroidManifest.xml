@@ -19,6 +19,10 @@
 
         <activity android:name=".AddingActivity">
 
+            <intent-filter>
+                <action android:name="android.intent.action.ALL_APPS"/>
+            </intent-filter>
+
         </activity>
     </application>
 

@@ -20,14 +20,13 @@ import java.util.List;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     // name of the database file for your application -- change to something appropriate for your app
-    private static final String DATABASE_NAME = "cat.db";
+    private static final String DATABASE_NAME = "tableentry.db";
 
     // any time you make changes to your database objects, you may have to increase the database version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     // the DAO object we use to access the SimpleData table
-    private Dao<Cat, Integer> catDAO = null;
-    private Dao<Kitten, Integer> kittenDAO = null;
+    private Dao<TableEntry, Integer> questionDAO = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,8 +35,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable(connectionSource, Cat.class);
-            TableUtils.createTable(connectionSource, Kitten.class);
+            TableUtils.createTable(connectionSource, TableEntry.class);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,25 +60,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     }
 
-    public Dao<Cat, Integer> getCatsDAO() {
-        if (catDAO == null) {
+    public Dao<TableEntry, Integer> getQuestionsDAO() {
+        if (questionDAO == null) {
             try {
-                catDAO = getDao(Cat.class);
+                questionDAO = getDao(TableEntry.class);
             } catch (java.sql.SQLException e) {
                 e.printStackTrace();
             }
         }
-        return catDAO;
+        return questionDAO;
     }
 
-    public Dao<Kitten, Integer> getKittenDAO() {
-        if (kittenDAO == null) {
-            try {
-                kittenDAO = getDao(Kitten.class);
-            } catch (java.sql.SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return kittenDAO;
-    }
+
 }
